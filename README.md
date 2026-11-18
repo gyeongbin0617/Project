@@ -25,10 +25,10 @@
 
 ## 📚 상세 프로젝트 문서 (Documentation)
 
-- 📋 **[프로젝트 관리 계획서 (PROJECT_PLAN.md)](./docs/PROJECT_PLAN.md)**
-  - 비즈니스 목표(Impact Mapping), 문맥 다이어그램(`CONTEXT_DIAGRAM.png`), 주요 요구사항 정의서, 팀 역할 및 일정(`WBS.pdf`)
 - 📐 **[유스케이스 명세서 (USE_CASES.md)](./docs/USE_CASES.md)**
   - 단일 액터(`플레이어`) 기반 유스케이스 다이어그램(`USE_CASE_DIAGRAM.png`) 및 `UC-01` ~ `UC-10` 상세 명세
+- 🗺️ **[문맥 다이어그램 (CONTEXT_DIAGRAM.png)](./docs/CONTEXT_DIAGRAM.png)**
+  - 외부 개체(`플레이어`)와 `숫자 탐험대 (Number Explorers) 시스템` 간의 데이터 입출력 흐름 정의
 
 ---
 
