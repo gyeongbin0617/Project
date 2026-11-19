@@ -43,4 +43,3 @@ void render_scene(App *a) {
         break;
     }
 }
-
