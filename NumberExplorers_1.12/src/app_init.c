@@ -1,59 +1,11 @@
 #include "app.h"
+#include "app_modules.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
-/* The free mode keeps earning coins possible when the balance reaches zero. */
-bool app_pay_entry(App *a, int mode) {
-    if (mode == 0) return true;
-    if (a->save.coins < 5) { app_message(a, "Not enough coins - play Classic 369"); return false; }
-    Save before = a->save;
-    a->save.coins -= 5;
-    if (!save_write(a)) { a->save = before; app_message(a, "Could not save progress. Check folder access."); return false; }
-    return true;
-}
-int app_bot_skin(const App *a, int player) {
-    return (a->save.skin + player) % 8;
-}
-int attendance_claim(Save *s, int today, int yesterday) {
-    if (today <= 0 || s->last_claim_day >= today) return 0;
-    s->attendance_streak = s->last_claim_day == yesterday ?
-        (s->attendance_streak < 7 ? s->attendance_streak + 1 : 7) : 1;
-    s->last_claim_day = today;
-    int bonus = 10 + 2 * (s->attendance_streak - 1);
-    s->coins = s->coins > 999999 - bonus ? 999999 : s->coins + bonus;
-    return bonus;
-}
-void app_reset_settings(Save *s) {
-    s->music=50; s->sfx=70; s->motion=1; s->fullscreen=0; s->language=1;
-}
-static int local_day(time_t timestamp) {
-    struct tm day;
-#ifdef _WIN32
-    if (localtime_s(&day, &timestamp)) return 0;
-#else
-    struct tm *found = localtime(&timestamp);
-    if (!found) return 0;
-    day = *found;
-#endif
-    return (day.tm_year + 1900) * 1000 + day.tm_yday + 1;
-}
+/* Initialize SDL, load saved data, and create application resources. */
 
-void app_message(App *a, const char *s) {
-    snprintf(a->toast, sizeof(a->toast), "%s", L(a, s));
-    a->toast_end = a->clock + 3.0;
-}
-void app_go(App *a, Scene s) {
-    a->scene = s;
-    a->help_open = false;
-    a->focus = 0;
-    a->click = false;
-    a->activate = false;
-    a->quit_confirm = false;
-    a->reset_confirm = false;
-    audio_cue(a, 0);
-}
 bool app_init(App *a, bool headless) {
     memset(a, 0, sizeof(*a));
     a->test_mode = headless;
@@ -143,38 +95,6 @@ bool app_init(App *a, bool headless) {
         SDL_SetWindowFullscreen(a->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!headless)
         audio_init(a);
-    if (!headless) {
-        Save before = a->save;
-        time_t now = time(NULL);
-        int bonus = attendance_claim(&a->save, local_day(now), local_day(now - 86400));
-        if (bonus && save_write(a)) {
-            snprintf(a->toast, sizeof(a->toast), a->save.language ?
-                "연속 출석 %d일! +%d코인" : "Day %d bonus! +%d coins", a->save.attendance_streak, bonus);
-            a->toast_end = 7.0;
-        } else if (bonus) a->save = before;
-    }
+    if (!headless) app_process_daily_attendance(a);
     return true;
-}
-void app_destroy(App *a) {
-    if (a->audio)
-        SDL_CloseAudioDevice(a->audio);
-    for (int i = 0; i < 256; i++)
-        if (a->cache[i].texture)
-            SDL_DestroyTexture(a->cache[i].texture);
-    for (int i = 0; i < 322; i++)
-        if (a->fonts[i])
-            TTF_CloseFont(a->fonts[i]);
-    if (a->room)
-        SDL_DestroyTexture(a->room);
-    if (a->friends)
-        SDL_DestroyTexture(a->friends);
-    if (a->new_friends)
-        SDL_DestroyTexture(a->new_friends);
-    if (a->renderer)
-        SDL_DestroyRenderer(a->renderer);
-    if (a->window)
-        SDL_DestroyWindow(a->window);
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
 }

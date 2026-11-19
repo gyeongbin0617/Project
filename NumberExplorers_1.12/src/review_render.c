@@ -1,30 +1,9 @@
 #include "app.h"
+#include "review_internal.h"
 #include <stdio.h>
 
-void app_note_feedback(App *a) {
-    Game *g=&a->game;
-    if (g->last_player!=0 || g->success) return;
-    mistake_add(&a->save.mistakes,0,g->value,g->rule,g->last_answer);
-    if (!save_write(a)) app_message(a,"Could not save progress. Check folder access.");
-}
-static void choices(const MistakeNote *n, int answer[3]) {
-    int slot=(n->left+n->right)%3;
-    answer[slot]=n->answer;
-    answer[(slot+1)%3]=n->answer+1;
-    answer[(slot+2)%3]=n->answer>0?n->answer-1:n->answer+2;
-}
-void review_answer(App *a, int choice) {
-    if (a->scene!=REVIEW || a->review_feedback || choice<0 || choice>=3 || a->review_index<0) return;
-    MistakeNote *n=&a->save.mistakes.note[a->review_index];
-    int options[3];choices(n,options);
-    int correct=options[choice]==n->answer;
-    mistake_review(&a->save.mistakes,a->review_index,correct);
-    a->review_feedback=correct;
-    a->review_last=choice;
-    if (!save_write(a)) app_message(a,"Could not save progress. Check folder access.");
-    if (!correct) app_message(a,"Try again");
-    audio_cue(a,correct?3:2);
-}
+/* Draw the mistake-review screen. */
+
 void review_render(App *a) {
     if (ui_header(a,"REVIEW MISTAKES")) {app_go(a,LOBBY);return;}
     ui_panel(a,170,128,940,522,CREAM);
@@ -68,7 +47,7 @@ void review_render(App *a) {
         }
         return;
     }
-    int options[3];choices(n,options);
+    int options[3];review_choices(n,options);
     for (int i=0;i<3;i++) {
         snprintf(label,sizeof(label),n->kind==0?
             (a->save.language?"박수 %d번":"%d claps"):"%d",options[i]);
