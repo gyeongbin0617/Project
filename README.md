@@ -25,11 +25,14 @@
 
 ## 📚 상세 프로젝트 문서 (Documentation)
 
-- 📐 **[유스케이스 명세서 (USE_CASES.md)](./docs/USE_CASES.md)**
-  - 단일 액터(`플레이어`) 기반 유스케이스 다이어그램(`USE_CASE_DIAGRAM.png`) 및 `UC-01` ~ `UC-10` 상세 명세
+- 📋 **[프로젝트 관리 계획서 (PROJECT_PLAN.md)](./docs/PROJECT_PLAN.md)**
+  - 프로젝트 개요, 문맥 다이어그램 요약, 조직 역할, WBS(`WBS_DIAGRAM.png`) 및 단계별 추진 일정, 관리 계획, Impact Mapping 정리
+- 📐 **[시스템 아키텍처 및 설계 명세 (ARCHITECTURE.md)](./docs/ARCHITECTURE.md)**
+  - C / SDL2(`SDL2`, `SDL2_image`, `SDL2_ttf`) 모듈화 구조(`include/`, `src/`) 기반 클래스·시퀀스·패키지 다이어그램(`CLASS_DIAGRAM.png`, `SEQUENCE_DIAGRAM.png`, `PACKAGE_DIAGRAM.png`) 및 클래스 목록
+- 📝 **[유스케이스 명세서 (USE_CASES.md)](./docs/USE_CASES.md)**
+  - 플레이어 기준 유스케이스 다이어그램(`USE_CASE_DIAGRAM.png`) 및 `UC-01` ~ `UC-10` 상세 명세
 - 🗺️ **[문맥 다이어그램 (CONTEXT_DIAGRAM.png)](./docs/CONTEXT_DIAGRAM.png)**
   - 외부 개체(`플레이어`)와 `숫자 탐험대 (Number Explorers) 시스템` 간의 데이터 입출력 흐름 정의
-
 ---
 
 ## 🚀 실행 방법
